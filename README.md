@@ -36,7 +36,7 @@ takahide.nejo@ucsf.edu
 
 
 ## Data availability:  
-Human glioblastoma scRNAseq data (Krishna S, 2023 Nature) is available through the NCBI Gene Expression Omnibus (GEO) (accession, GSE223065 (https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE223065)). 
+Human glioblastoma scRNAseq data (Krishna S, 2023 Nature) is available through the NCBI Gene Expression Omnibus (GEO) (accession, [GSE223065](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE223065)). 
 
 
 ## Key data visualization tools:  
