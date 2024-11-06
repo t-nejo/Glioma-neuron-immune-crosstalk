@@ -36,7 +36,7 @@ takahide.nejo@ucsf.edu
 
 
 ## Data availability:  
-Nanopore full-length transcript amplicon sequencing dataset generated in this study will be made available through the NCBI Gene Expression Omnibus (GEO) website upon manuscript acceptance. RNA-seq data of the TCGA ([phs000178.v10.p8](https://www.ncbi.nlm.nih.gov/projects/gap/cgi-bin/study.cgi?study_id=phs000178.v10.p8)) and the GTEx ([phs000424.v9.p2](https://www.ncbi.nlm.nih.gov/projects/gap/cgi-bin/study.cgi?study_id=phs000424.v9.p2)) datasets were obtained through the GDC Data Portal with an approved dbGaP data access. RNA-seq data of Mayo Clinic GBM PDX was obtained through the NCBI GEO (accession, [PRJNA548556](https://www.mayo.edu/research/labs/translational-neuro-oncology/mayo-clinic-brain-tumor-patient-derived-xenograft-national-resource/pdx-characteristics/cbioportal)). The CPTAC-GBM proteomics data was obtained through NIH Proteomic Data Commons (Study ID [PDC000204](https://proteomic.datacommons.cancer.gov/pdc/study/PDC000204)). The RNA-seq data of the spatially mapped dataset have been deposited in the European Genome-phenome Archive (EGA) under accession number [EGAS00001003710](https://ega-archive.org/studies/EGAS00001003710). The data for the longitudinally collected dataset have been deposited in the EGA under accession number [EGAS00001002368](https://ega-archive.org/studies/EGAS00001002368) and dbGaP study accession: [phs002034.v1.p1](https://www.ncbi.nlm.nih.gov/projects/gap/cgi-bin/study.cgi?study_id=phs002034.v1.p1).
+Human glioblastoma scRNAseq data (Krishna S, 2023 Nature) is available through the NCBI Gene Expression Omnibus (GEO) (accession, GSE223065 (https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE223065)). 
 
 
 ## Key data visualization tools:  
