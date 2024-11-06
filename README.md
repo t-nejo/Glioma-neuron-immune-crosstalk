@@ -48,6 +48,7 @@ Nanopore full-length transcript amplicon sequencing dataset generated in this st
 
 **If you use our data or code for your work, please consider citing the following publication:**  
 
-Nejo T, Wang L, Leung KK, Wang A, Lakshmanachetty S, Gallus M, Kwok DW, Hong C, Chen LH, Carrera DA, Zhang MY, Stevers NO, Maldonado GC, Yamamichi A, Watchmaker PB, Naik A, Shai A, Phillips JJ, Chang SM, Wiita AP, Wells JA, Costello JF, Diaz AA, Okada H. Challenges in the discovery of tumor-specific alternative splicing-derived cell-surface antigens in glioma. bioRxiv [Preprint](https://www.biorxiv.org/content/10.1101/2023.10.26.564156v2.full). 2023 Nov 2:2023.10.26.564156. doi: 10.1101/2023.10.26.564156. PMID: [37961484](https://pubmed.ncbi.nlm.nih.gov/37961484/); PMCID: PMC10634890.  
+Nejo T, Krishna S, Jimenez C, Yamamichi A, Young JS, Lakshmanachetty S, Chen T, Phyu SSS, Ogino H, Watchmaker P, Diebold D, Choudhury A, Daniel AGS, Raleigh DR, Hervey-Jumper SL, Okada H. Glioma-neuronal circuit remodeling induces regional immunosuppression. bioRxiv [Preprint](https://www.biorxiv.org/content/10.1101/2023.08.04.548295v1). 2023 Aug 6:2023.08.04.548295. doi: 10.1101/2023.08.04.548295. PMID: 37577659 (https://pubmed.ncbi.nlm.nih.gov/37577659/) ; PMCID: PMC10418167.
+
   
   
