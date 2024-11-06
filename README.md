@@ -28,12 +28,12 @@ takahide.nejo@ucsf.edu
 ## Key analysis tools:  
 
 [Seurat](https://github.com/alexdobin/STAR): Short-read RNA-seq read alignment and junction detection  
-[SPATA2](https://themilolab.github.io/SPATA2/): An analytic platform of spatial transcriptomics data.
-[SPATAData](https://themilolab.github.io/SPATA2/articles/spata-data.html): A database of spatial transcriptomic samples that are made publicly available.
-[fgsea](https://bioconductor.org/packages/release/bioc/html/fgsea.html):
-[GSVA]:
-[AUCell]:
-[JASMINE]:
+[SPATA2](https://themilolab.github.io/SPATA2/): An analytic platform of spatial transcriptomics data.  
+[SPATAData](https://themilolab.github.io/SPATA2/articles/spata-data.html): A database of spatial transcriptomic samples that are made publicly available.  
+[fgsea](https://bioconductor.org/packages/release/bioc/html/fgsea.html): fgsea.  
+[GSVA](https://www.bioconductor.org/packages/release/bioc/html/GSVA.html): GSVA.  
+[AUCell](https://www.bioconductor.org/packages/release/bioc/html/AUCell.html): AUCell.  
+[JASMINE](https://github.com/NNoureen/JASMINE): JASMINE.  
 
 
 ## Data availability:  
