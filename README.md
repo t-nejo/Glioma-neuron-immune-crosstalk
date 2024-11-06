@@ -27,17 +27,19 @@ takahide.nejo@ucsf.edu
   
 ## Key analysis tools:  
 
-[STAR](https://github.com/alexdobin/STAR): Short-read RNA-seq read alignment and junction detection  
-[IRFinder](https://github.com/williamritchie/IRFinder): Intron-retention analysis  
-[Guppy basecaller](https://community.nanoporetech.com/docs/prepare/library_prep_protocols/Guppy-protocol/v/gpb_2003_v1_revax_14dec2018/guppy-software-overview): Nanopore long read sequencing base calling  
-[FLAIR](https://github.com/BrooksLabUCSC/flair): Nanopore long read sequencing FASTQ analysis  
-[MSGF+](https://github.com/MSGFPlus/msgfplus): Peptide spectra database search  
-[MASIC](https://github.com/PNNL-Comp-Mass-Spec/MASIC): Quantification of 11-TMT reporter ions  
+[Seurat](https://github.com/alexdobin/STAR): Short-read RNA-seq read alignment and junction detection  
+[SPATA2](https://themilolab.github.io/SPATA2/): An analytic platform of spatial transcriptomics data.
+[SPATAData](https://themilolab.github.io/SPATA2/articles/spata-data.html): A database of spatial transcriptomic samples that are made publicly available.
+[fgsea](https://bioconductor.org/packages/release/bioc/html/fgsea.html):
+[GSVA]:
+[AUCell]:
+[JASMINE]:
 
 
 ## Data availability:  
 Human glioblastoma scRNAseq data (Krishna S, 2023 Nature) is available through the NCBI Gene Expression Omnibus (GEO) (accession, [GSE223065](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE223065)). 
 
+The mouse spatial transcriptomics and bulk RNA-seq dataset generated in this study will be made available through the NCBI GEO website upon manuscript acceptance.
 
 ## Key data visualization tools:  
 [BioRender](https://www.biorender.com/)  
