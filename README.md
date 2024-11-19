@@ -2,7 +2,7 @@
 
 ## Introduction  
 
-This repository contains the code used to analyze the data in Nejo et al. bioRxiv (2023) "Glioma-neuronal circuit remodeling induces regional immunosuppression" (doi: [10.1101/2023.08.04.548295](https://www.biorxiv.org/content/10.1101/2023.08.04.548295v1.full)). 
+This repository contains the codes used to analyze the data in Nejo et al. bioRxiv (2023) "Glioma-neuronal circuit remodeling induces regional immunosuppression" (doi: [10.1101/2023.08.04.548295](https://www.biorxiv.org/content/10.1101/2023.08.04.548295v1.full)). 
 
   
 ## Primary contact: 
@@ -19,7 +19,7 @@ University of California, San Francisco, Department of Neurological Surgery
 hideho.okada@ucsf.edu  
   
   
-## Questions about the code:  
+## Questions about the codes:  
   
 **Takahide Nejo, MD, PhD**  
 takahide.nejo@ucsf.edu  
