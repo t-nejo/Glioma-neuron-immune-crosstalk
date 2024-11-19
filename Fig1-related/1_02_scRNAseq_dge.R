@@ -5,7 +5,9 @@
 # note ---------------------------------------------------------------------
 
 # Nejo T, et al., Glioma-neuronal circuit remodeling induces regional immunosuppression
+
 # The RDS object "004_gbm_neuroimmune_v2.rds" is used as an input Seurat object. For details, please refer to the previous steps "1_00_scRNAseq_data_setup.R" and "1_01_scRNAseq_cell_type_annotation.R". 
+
 # Using different versions of packages, such as Seurat, may lead to varying outcomes, which we have not thoroughly validated.
 
 
@@ -170,6 +172,8 @@ for(i in 1:4){
 FINISH.TIME <- Sys.time() 
 FINISH.TIME - START.TIME 
 # Time difference of 35.11414 secs
+
+names(list.seurat.obj.2) <- c("Tumor Cells", "Myeloid Cells", "Lymphoid Cells", "Astrocytes")
 
 
 # check -------------------------------------------------------------------
