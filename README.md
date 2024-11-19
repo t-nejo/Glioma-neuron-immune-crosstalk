@@ -1,4 +1,4 @@
-# Glioma-neuronal circuit remodeling induces regional immunosuppression
+# Glioma-neuron-immune crosstalk paper
 
 ## Introduction  
 
