@@ -23,6 +23,7 @@ library(tidylog)
 library(Seurat)
 library(MAST)
 library(ggrepel)
+library(ggpubr)
 
 
 # check -------------------------------------------------------------------
@@ -129,6 +130,8 @@ for(i in 1:4){
 # [1] "Astrocytes"
 # [1] 61
 
+names(list.seurat.obj) <- c("Tumor Cells", "Myeloid Cells", "Lymphoid Cells", "Astrocytes")
+
 
 # Preprocessing ------------------------------------------------------------------
 
@@ -212,6 +215,19 @@ for(i in 1:4){
 }
 
 
+# save ---------------------------------------------------------------------
+
+START.TIME <- Sys.time() 
+
+setwd(dir.2)
+out.f <- "001_gbm_neuroimmune_v3_subset_list.rds"
+saveRDS(list.seurat.obj.2, out.f)
+
+FINISH.TIME <- Sys.time() 
+FINISH.TIME - START.TIME 
+# Time difference of 6.251748 mins
+
+
 # DGE analysis using MAST algorithm ---------------------------------------
 
 START.TIME <- Sys.time() 
@@ -231,6 +247,7 @@ for(i in 1:4){
       ident.1 = "hfc", 
       ident.2 = "lfc", 
       test.use = "MAST", 
+      latent.vars = "batch", # ref: https://github.com/satijalab/seurat/discussions/4595
       logfc.threshold	= 0, # default = 0.25
       min.pct = 0, 
       verbose = T
@@ -239,7 +256,7 @@ for(i in 1:4){
 
 FINISH.TIME <- Sys.time() 
 FINISH.TIME - START.TIME 
-# Time difference of 39.67477 mins
+# Time difference of 47.93051 mins
 
 names(list.res.mast) <- c("Tumor Cells", "Myeloid Cells", "Lymphoid Cells", "Astrocytes")
 
@@ -264,33 +281,33 @@ for(i in 1:4){
   # # A tibble: 24,173 × 6
   # symbol     p_val avg_log2FC pct.1 pct.2 p_val_adj
   # <chr>      <dbl>      <dbl> <dbl> <dbl>     <dbl>
-  # 1 CCL3   0             -2.35  0.219 0.64  0        
-  # 2 CCL4   0             -2.76  0.229 0.647 0        
-  # 3 CCL4L2 3.39e-255     -1.43  0.145 0.462 8.20e-251
-  # 4 XIST   6.34e-217     -1.58  0.083 0.347 1.53e-212
-  # 5 POSTN  1.08e-207      1.27  0.382 0.099 2.61e-203
-  # 6 GAPDH  1.38e-172      0.788 0.988 0.946 3.33e-168
-  # 7 ITM2B  3.27e-160      0.616 0.892 0.857 7.91e-156
-  # 8 CCL3L1 2.16e-154     -0.965 0.108 0.329 5.21e-150
-  # 9 C1QB   5.35e-152     -1.17  0.165 0.404 1.29e-147
-  # 10 EGFR   7.40e-149     -0.945 0.289 0.553 1.79e-144
+  # 1 CCL4   2.03e-188     -2.76  0.229 0.647 4.92e-184
+  # 2 CCL3   1.52e-172     -2.35  0.219 0.64  3.67e-168
+  # 3 CCL4L2 5.62e-142     -1.43  0.145 0.462 1.36e-137
+  # 4 S100A1 4.67e-136     -0.944 0.321 0.415 1.13e-131
+  # 5 HIF1A  1.13e-131      0.800 0.788 0.699 2.72e-127
+  # 6 PLA2R1 1.46e-125     -0.357 0.11  0.286 3.52e-121
+  # 7 FKBP1A 2.64e-118      0.798 0.825 0.712 6.38e-114
+  # 8 COTL1  1.51e-117      0.782 0.729 0.609 3.64e-113
+  # 9 STK32A 6.22e-111      0.599 0.449 0.366 1.50e-106
+  # 10 COX4I1 1.60e-107      0.497 0.868 0.809 3.87e-103
   # # … with 24,163 more rows
   # [1] 2
   # [1] "Myeloid Cells"
   # [1] 24173
   # # A tibble: 24,173 × 6
-  # symbol     p_val avg_log2FC pct.1 pct.2 p_val_adj
-  # <chr>      <dbl>      <dbl> <dbl> <dbl>     <dbl>
-  # 1 IFI44L 2.80e-189     -1.53  0.257 0.733 6.78e-185
-  # 2 CCL4   1.29e-127     -1.24  0.716 0.966 3.11e-123
-  # 3 CH25H  8.62e-127     -1.57  0.396 0.802 2.08e-122
-  # 4 XIST   4.32e-116     -0.848 0.295 0.733 1.04e-111
-  # 5 XAF1   3.33e-115     -0.980 0.357 0.696 8.05e-111
-  # 6 LY6E   7.33e-108     -0.879 0.209 0.585 1.77e-103
-  # 7 IFI6   1.21e-104     -0.974 0.311 0.668 2.93e-100
-  # 8 CCL3   2.64e-104     -1.06  0.798 0.977 6.39e-100
-  # 9 SAMD9L 7.31e- 92     -0.790 0.368 0.666 1.77e- 87
-  # 10 PLTP   1.19e- 85      1.36  0.575 0.286 2.88e- 81
+  # symbol    p_val avg_log2FC pct.1 pct.2 p_val_adj
+  # <chr>     <dbl>      <dbl> <dbl> <dbl>     <dbl>
+  # 1 IFI44L 4.07e-80     -1.53  0.257 0.733  9.84e-76
+  # 2 CCL4   1.02e-65     -1.24  0.716 0.966  2.46e-61
+  # 3 RPS10  2.34e-56      0.358 0.853 0.908  5.65e-52
+  # 4 CCL3   1.30e-48     -1.06  0.798 0.977  3.15e-44
+  # 5 IFI6   6.53e-47     -0.974 0.311 0.668  1.58e-42
+  # 6 RPL17  3.12e-43      0.376 0.66  0.657  7.54e-39
+  # 7 IL1B   6.49e-41     -1.14  0.441 0.752  1.57e-36
+  # 8 LY6E   1.86e-40     -0.879 0.209 0.585  4.50e-36
+  # 9 CD83   2.01e-39     -0.804 0.76  0.94   4.87e-35
+  # 10 CCL4L2 9.17e-39     -0.590 0.566 0.852  2.22e-34
   # # … with 24,163 more rows
   # [1] 3
   # [1] "Lymphoid Cells"
@@ -298,33 +315,33 @@ for(i in 1:4){
   # # A tibble: 24,173 × 6
   # symbol    p_val avg_log2FC pct.1 pct.2 p_val_adj
   # <chr>     <dbl>      <dbl> <dbl> <dbl>     <dbl>
-  # 1 CCL3   1.91e-23     -1.39  0.407 0.909  4.62e-19
-  # 2 CCL4   1.65e-12     -0.679 0.698 0.974  3.99e- 8
-  # 3 SPP1   1.01e-11     -0.839 0.605 0.874  2.44e- 7
-  # 4 APOE   1.18e-10     -1.39  0.453 0.754  2.84e- 6
-  # 5 RPL17  1.68e-10      0.831 0.779 0.55   4.05e- 6
-  # 6 RPS10  2.89e-10      0.818 0.919 0.929  6.99e- 6
-  # 7 FTH1   2.79e- 9     -0.821 0.988 0.997  6.74e- 5
-  # 8 NR4A3  2.83e- 9     -1.05  0.128 0.479  6.84e- 5
-  # 9 CCL3L1 4.84e- 8     -0.973 0.105 0.411  1.17e- 3
-  # 10 NR4A2  5.06e- 8     -0.827 0.651 0.877  1.22e- 3
+  # 1 CCL3   3.87e-20     -1.39  0.407 0.909  9.36e-16
+  # 2 RPS10  1.00e-12      0.818 0.919 0.929  2.43e- 8
+  # 3 CCL4   2.04e-11     -0.679 0.698 0.974  4.93e- 7
+  # 4 RPL17  3.09e-10      0.831 0.779 0.55   7.48e- 6
+  # 5 NR4A3  6.25e- 9     -1.05  0.128 0.479  1.51e- 4
+  # 6 SPP1   1.01e- 8     -0.839 0.605 0.874  2.44e- 4
+  # 7 DUSP1  5.59e- 8      0.435 0.791 0.939  1.35e- 3
+  # 8 CCL3L1 6.07e- 8     -0.973 0.105 0.411  1.47e- 3
+  # 9 APOE   9.25e- 8     -1.39  0.453 0.754  2.24e- 3
+  # 10 FTH1   1.16e- 7     -0.821 0.988 0.997  2.82e- 3
   # # … with 24,163 more rows
   # [1] 4
   # [1] "Astrocytes"
   # [1] 24173
   # # A tibble: 24,173 × 6
-  # symbol       p_val avg_log2FC pct.1 pct.2 p_val_adj
-  # <chr>        <dbl>      <dbl> <dbl> <dbl>     <dbl>
-  # 1 CCL4    0.00000737     -1.53   0.1  0.732     0.178
-  # 2 DDX3Y   0.000110        0.996  0.75 0.195     1    
-  # 3 HOPX    0.000226        1.14   0.3  0         1    
-  # 4 NELFE   0.000284       -0.671  0    0.366     1    
-  # 5 XIST    0.000295       -1.37   0.05 0.512     1    
-  # 6 CCL3    0.000485       -1.54   0.2  0.707     1    
-  # 7 RNF144B 0.000656       -1.43   0.35 0.829     1    
-  # 8 ITGB1   0.000752        1.19   0.9  0.439     1    
-  # 9 ERO1A   0.000806        1.62   0.6  0.317     1    
-  # 10 PPCS    0.000908       -0.582  0    0.317     1    
+  # symbol     p_val avg_log2FC pct.1 pct.2 p_val_adj
+  # <chr>      <dbl>      <dbl> <dbl> <dbl>     <dbl>
+  # 1 NELFE   0.000277     -0.671  0    0.366         1
+  # 2 ITGA5   0.000556      1.13   0.35 0.268         1
+  # 3 PPCS    0.000557     -0.582  0    0.317         1
+  # 4 SMIM14  0.000716     -1.09   0.05 0.439         1
+  # 5 PARVB   0.000888     -0.453  0    0.171         1
+  # 6 UBE2E1  0.00100      -0.566  0.05 0.293         1
+  # 7 MBTPS1  0.00131      -0.533  0    0.195         1
+  # 8 TRIM52  0.00143      -0.597  0    0.171         1
+  # 9 PAIP1   0.00149      -0.350  0    0.195         1
+  # 10 TMEM173 0.00149      -0.484  0    0.195         1
   # # … with 24,163 more rows
 }
 
@@ -333,16 +350,12 @@ for(i in 1:4){
 
 START.TIME <- Sys.time() 
 
-setwd(dir.2)
-out.f <- "001_gbm_neuroimmune_v3_subset_list.rds"
-saveRDS(list.seurat.obj.2, out.f)
-
 out.f <- "002_res_findmarkers_mast_list.rds"
 saveRDS(list.res.mast, out.f)
 
 FINISH.TIME <- Sys.time() 
 FINISH.TIME - START.TIME 
-# Time difference of 5.654952 mins
+# Time difference of 0.2180417 secs
 
 
 # visualize MAST-DGE results in volcano plots -----------------------------------------
@@ -413,16 +426,16 @@ sessionInfo()
 # LAPACK: /software/c4/cbi/software/_rocky8/R-4.1.3/lib64/R/lib/libRlapack.so
 # 
 # locale:
-#   [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C               LC_TIME=en_US.UTF-8       
+# [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C               LC_TIME=en_US.UTF-8       
 # [4] LC_COLLATE=en_US.UTF-8     LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
 # [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                  LC_ADDRESS=C              
 # [10] LC_TELEPHONE=C             LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
 # 
 # attached base packages:
-#   [1] stats     graphics  grDevices utils     datasets  methods   base     
+# [1] stats     graphics  grDevices utils     datasets  methods   base     
 # 
 # other attached packages:
-#   [1] ggrepel_0.9.1      cowplot_1.1.1      glmGamPoi_1.4.0    sctransform_0.3.5 
+# [1] ggrepel_0.9.1      cowplot_1.1.1      glmGamPoi_1.4.0    sctransform_0.3.5 
 # [5] ggpubr_0.4.0       ggsci_2.9          RColorBrewer_1.1-3 harmony_0.1.0     
 # [9] Rcpp_1.0.8.3       tidylog_1.0.2      forcats_0.5.1      stringr_1.4.0     
 # [13] dplyr_1.0.9        purrr_0.3.4        readr_2.1.2        tidyr_1.2.0       
@@ -430,7 +443,7 @@ sessionInfo()
 # [21] Seurat_4.3.0.1     SPATA2_2.0.4      
 # 
 # loaded via a namespace (and not attached):
-#   [1] utf8_1.2.2                  spatstat.explore_3.2-1     
+# [1] utf8_1.2.2                  spatstat.explore_3.2-1     
 # [3] reticulate_1.25             tidyselect_1.1.2           
 # [5] htmlwidgets_1.6.2           grid_4.1.3                 
 # [7] Rtsne_0.16                  munsell_0.5.0              
