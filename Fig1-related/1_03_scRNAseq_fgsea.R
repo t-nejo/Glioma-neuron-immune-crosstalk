@@ -193,7 +193,14 @@ names(list.res.fgsea) <- c("Tumor Cells", "Myeloid Cells", "Lymphoid Cells", "As
 FINISH.TIME <- Sys.time() 
 
 FINISH.TIME - START.TIME 
-# Time difference of 4.092789 secs
+# Time difference of 6.627263 secs
+
+
+# save --------------------------------------------------------------------
+
+setwd(dir.2)
+out.f <- "000_res_fgsea_hallmark_list.rds"
+saveRDS(list.res.fgsea, out.f)
 
 
 # Supplementary Table 1 --------------------------------------------------
@@ -255,7 +262,7 @@ for(i in 1:4){
   name.i <- c("tumor", "myeloid", "lymphoid", "astro")[i] 
   setwd(dir.2)
   out.f <- paste0("002_barplot_res_fgsea_hm_top_n_bottom_6_", i, "_", name.i, ".pdf")
-  ggsave(out.f, g, width = 8, height = 6) ;   
+  ggsave(out.f, g, width = 8, height = 6)  
 }
 
 
