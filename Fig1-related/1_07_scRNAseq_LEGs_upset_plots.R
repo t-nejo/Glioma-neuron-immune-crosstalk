@@ -32,7 +32,7 @@ packageVersion("Seurat")
 # dir ---------------------------------------------------------------------
 
 dir.1 <- "/okadalab/data1/tnejo/neuro_immune_proj/for_github/out/1_03_scRNAseq_fgsea/"
-dir.2 <- "/okadalab/data1/tnejo/neuro_immune_proj/for_github/out/1_0X_scRNAseq_LEGs_upset_plots/"
+dir.2 <- "/okadalab/data1/tnejo/neuro_immune_proj/for_github/out/1_07_scRNAseq_LEGs_upset_plots/"
 if(dir.exists(dir.2) == F){dir.create(dir.2)}
 
 
