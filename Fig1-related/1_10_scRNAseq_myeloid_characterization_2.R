@@ -21,6 +21,8 @@ rm(list = ls(all.names = T))
 library(tidyverse)
 library(tidylog)
 library(Seurat)
+library(wesanderson)
+library(ggsci)
 
 
 # check -------------------------------------------------------------------
@@ -161,7 +163,7 @@ out.f <- "001_ftrplot_myeloid_MgTAM_n_MoTAM_scores_Muller.pdf"
 ggsave(out.f, g, width = 10, height = 5)
 
 
-# Visualize Mg/Mo-TAM ------------------------------------------------------------
+# classify Mg/Mo-TAM ------------------------------------------------------------
 
 metadata.tmp <- seurat.obj@meta.data %>%
   rownames_to_column("cell.id") %>%
@@ -179,7 +181,6 @@ seurat.obj@meta.data <- metadata.tmp.2
 seurat.obj@meta.data$Muller_cl <- factor(seurat.obj@meta.data$Muller_cl,
                                          levels = c("Mo-TAM", "Mg-TAM", "undetermined")
 )
-
 
 
 # dimplot (Fig. 1h) -------------------------------------------------------
@@ -242,7 +243,7 @@ ggsave(out.f, g, w = 6, h = 4)
 
 
 
-# Bar plot (Extended Data Fig. S4e)----------------------------------------------------------------
+# bar plot (Extended Data Fig. S4e)----------------------------------------------------------------
 
 n.table.2$Muller_cl <- factor(n.table.2$Muller_cl, levels = rev(c("Mo-TAM", "Mg-TAM", "undetermined")))
 
@@ -264,7 +265,7 @@ ggsave(out.f, g, width = 4, height = 3)
 
 
 
-# Bar plot (Extended Data Fig. S4f)----------------------------------------------------------------
+# bar plot (Extended Data Fig. S4f)----------------------------------------------------------------
 
 # per patient
 
@@ -304,7 +305,7 @@ out.f <- "005_bar_plot_myeloid_MgTAM_n_MoTAM_Muller_cl_hfc_lfc_per_patient.pdf"
 ggsave(out.f, g, width = 8, height = 4.5) 
 
 
-# Line plot (Extended Data Fig. S4g) --------------------------------------------------
+# line plot (Extended Data Fig. S4g) --------------------------------------------------
 
 # per patient
 
@@ -344,10 +345,173 @@ out.f <- "006_line_plot_myeloid_MgTAM_n_MoTAM_Muller_cl_hfc_lfc_per_patient.pdf"
 ggsave(out.f, g, width = 8, height = 4.5) 
 
 
+
+# TSP1 --------------------------------------------------------------------
+
+
+# feature plot (Extended Data Fig. S5a) ------------------------------------------------
+
+Idents(seurat.obj) <- "seurat_clusters.new"
+
+g <- FeaturePlot(
+  seurat.obj,
+  features = "THBS1",
+  pt.size = 0.8,
+  order = T, 
+  cols = c("lightgrey", wes_palette("Zissou1", 100, type = "continuous"))
+)
+g <- g & theme(
+  panel.grid.major = element_line(color = "#f0f0f0"),
+  axis.text = element_blank(),
+  axis.title = element_blank(), 
+  plot.title = element_text(size = 24 / 2.845276, face = "italic"), 
+)
+
+plot(g)
+
+setwd(dir.2)
+out.f <- "007_ftrplot_myeloid_TSP1_all.pdf"
+ggsave(out.f, g, width = 6, height = 4.5) 
+
+
+# feature and vln plots (Extended Data Fig. S5b-c) ------------------------------------------------
+
+g <- FeaturePlot(
+  seurat.obj,
+  features = "THBS1",
+  split.by = "tissue", 
+  pt.size = 0.8,
+  order = T, 
+  cols = c("lightgrey", wes_palette("Zissou1", 100, type = "continuous"))
+)
+g <- g & theme(
+  panel.grid.major = element_line(color = "#f0f0f0"),
+  axis.text = element_blank(),
+  axis.title = element_blank(), 
+)
+plot(g)
+
+setwd(dir.2)
+out.f <- "008_ftrplot_myeloid_TSP1_hfc_v_lfc.pdf"
+ggsave(out.f, g, width = 9, height = 4.5) 
+
+
+Idents(seurat.obj) <- "tissue"
+
+g <- VlnPlot(
+  seurat.obj,
+  features = "THBS1", 
+  slot = "scale.data",
+  assay = "RNA", 
+  cols = pal_nejm()(2), 
+  pt.size = 1
+) 
+g <- g & theme(
+  legend.position = "none",
+  panel.grid.major = element_line(color = "#f0f0f0"),
+  axis.text = element_text(size = 12, angle = 0),
+  axis.title.x = element_blank(), 
+)
+plot(g)
+
+setwd(dir.2)
+out.f <- "009_vlnplot_myeloid_TSP1_hfc_v_lfc.pdf"
+ggsave(out.f, g, width = 6, height = 4.5) 
+
+
+# feature and vln plots (Extended Data Fig. S5d-e) ------------------------------------------------
+
+g <- FeaturePlot(
+  seurat.obj %>% subset(subset = seurat_clusters.new != "undetermined"),
+  features = "THBS1",
+  split.by = "seurat_clusters.new", 
+  pt.size = 0.8,
+  order = T, 
+  cols = c("lightgrey", wes_palette("Zissou1", 100, type = "continuous"))
+)
+g <- g & theme(
+  panel.grid.major = element_line(color = "#f0f0f0"),
+  axis.text = element_blank(),
+  axis.title = element_blank(), 
+)
+plot(g)
+
+setwd(dir.2)
+out.f <- "010_ftrplot_myeloid_TSP1_pro_v_anti.pdf"
+ggsave(out.f, g, width = 9, height = 4.5) 
+
+
+Idents(seurat.obj) <- "seurat_clusters.new"
+
+g <- VlnPlot(
+  seurat.obj %>% subset(subset = seurat_clusters.new != "undetermined"),
+  features = "THBS1", 
+  slot = "scale.data",
+  assay = "RNA", 
+  cols = c("#E69F00", "#56B4E9"), 
+  pt.size = 1
+) 
+g <- g & theme(
+  legend.position = "none",
+  panel.grid.major = element_line(color = "#f0f0f0"),
+  axis.text = element_text(size = 12, angle = 0),
+  axis.title.x = element_blank()
+  )
+plot(g)
+
+setwd(dir.2)
+out.f <- "011_vlnplot_myeloid_TSP1_pro_v_anti.pdf"
+ggsave(out.f, g, width = 6, height = 4.5) 
+
+
+# feature and vln plots (Fig. S1i) ------------------------------------------------
+
+g <- FeaturePlot(
+  seurat.obj %>% subset(subset = Muller_cl != "undetermined"),
+  features = "THBS1",
+  split.by = "Muller_cl", 
+  pt.size = 0.8,
+  order = T, 
+  cols = c("lightgrey", wes_palette("Zissou1", 100, type = "continuous"))
+)
+g <- g & theme(
+  panel.grid.major = element_line(color = "#f0f0f0"),
+  axis.text = element_blank(),
+  axis.title = element_blank()
+)
+plot(g)
+
+setwd(dir.2)
+out.f <- "012_ftrplot_myeloid_TSP1_Mo_v_Mg.pdf"
+ggsave(out.f, g, width = 9, height = 4.5) 
+
+
+Idents(seurat.obj) <- "Muller_cl"
+
+g <- VlnPlot(
+  seurat.obj %>% subset(subset = Muller_cl != "undetermined"),
+  features = "THBS1", 
+  slot = "scale.data",
+  assay = "RNA", 
+  cols = c("#44AA99", "#AA4499"), 
+  pt.size = 1
+) 
+g <- g & theme(
+  legend.position = "none",
+  panel.grid.major = element_line(color = "#f0f0f0"),
+  axis.text = element_text(size = 12, angle = 0),
+  axis.title.x = element_blank()
+)
+plot(g)
+
+setwd(dir.2)
+out.f <- "013_vlnplot_myeloid_TSP1_Mo_v_Mg.pdf"
+ggsave(out.f, g, width = 6, height = 4.5) 
+
+
 # si ----------------------------------------------------------------------
 
 Sys.time() %>% print()
-# 
 
 sessionInfo()
 # R version 4.1.3 (2022-03-10)
