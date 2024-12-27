@@ -11,6 +11,8 @@
 
 # Using different versions of packages, such as SPATA2, may lead to varying outcomes, which we have not thoroughly validated.
 
+# The RDS object "visium_SB28_1.rds" is used as input. For more details, please refer to the previous step, "2_00_stRNAseq_data_setup.R".
+
 
 # rm all ------------------------------------------------------------------
 
