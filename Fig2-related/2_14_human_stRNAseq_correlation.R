@@ -5,13 +5,15 @@
 # note ---------------------------------------------------------------------
 
 # Nejo T, et al., Glioma-neuronal circuit remodeling induces regional immunosuppression
-# Analysis of SB28 tumor-bearing mouse brain 10X Visium st-RNA-seq data
+# Analysis of SPATAData human GBM 10X Visium st-RNA-seq data
 
-# Below is the script for the first sample. The data from the second sample was processed and analyzed similarly. 
+# Below is the script for one sample ("260_T"). The data from the other samples were processed and analyzed similarly. 
 
 # Using different versions of packages, such as SPATA2, may lead to varying outcomes, which we have not thoroughly validated.
 
-# The RDS object "visium_SB28_1_subset_infiltration_area.rds" is used as input. For more details, please refer to the previous step, "2_03_stRNAseq_segmentation.R".
+# The RDS object "visium_SPATAData_260_T_cna_index_added.rds" is used as input. For more details, please refer to the previous step, "2_13_human_stRNAseq_cnv_index.R".
+
+# ref: https://themilolab.github.io/SPATA2/articles/spata-data.html
 
 
 # rm all ------------------------------------------------------------------
@@ -21,12 +23,9 @@ rm(list = ls(all.names = T))
 
 # packages ----------------------------------------------------------------
 
-library(SPATA2) 
+library(SPATA2)
 library(tidyverse)
 library(tidylog)
-library(EBImage)
-library(hdf5r)
-library(ggsci)
 library(ggpubr)
 library(msigdbr)
 
@@ -39,49 +38,82 @@ packageVersion("SPATA2")
 
 # dir ---------------------------------------------------------------------
 
-dir.1 <- "/okadalab/data1/tnejo/neuro_immune_proj/for_github/out/2_03_stRNAseq_segmentation/"
-dir.2 <- "/okadalab/data1/tnejo/neuro_immune_proj/for_github/out/2_04_stRNAseq_correlation/"
+dir.1 <- "/okadalab/data1/tnejo/neuro_immune_proj/for_github/out/2_13_human_stRNAseq_cnv_index/"
+dir.2 <- "/okadalab/data1/tnejo/neuro_immune_proj/for_github/out/2_14_human_stRNAseq_correlation"
+
 if(dir.exists(dir.2) == F){dir.create(dir.2)}
 
 
-# 1. load the spata-object ------------------------------------------------
+# load the spata-object ------------------------------------------------
 
 START.TIME <- Sys.time()
 
 setwd(dir.1)
-in.f <- "visium_SB28_1_subset_infiltration_area_edited.rds"
+in.f <- "visium_SPATAData_260_T_cna_index_added.rds"
 spata.obj <- readRDS(in.f)
 
 FINISH.TIME <- Sys.time() 
 
 print(FINISH.TIME - START.TIME)
-# Time difference of 1.188813 secs
+# Time difference of 10.43524 secs
 
 
 # check -------------------------------------------------------------------
 
 spata.obj 
-# An object of class 'spata2' that contains 1 sample named 'A1_166L_Cas9'.
+# An object of class 'spata2' that contains 1 sample named '260_T'.
 
 spata.obj %>% 
-  getFeatureDf() %>% 
-  colnames() %>% 
+  getCoordsDf() %>% 
   print()
-# [1] "barcodes"            "sample"              "orig.ident"          "nCount_Spatial"     
-# [5] "nFeature_Spatial"    "percent.mt"          "percent.RB"          "Spatial_snn_res.0.8"
-# [9] "seurat_clusters"     "histology"           "RCTM_NEU"            "VRHK_MES"           
-# [13] "segmentation"        "VRHK_MES_cl"         "RCTM_NEU_cl"         "label"              
-# [17] "label.2"    
+
+# # A tibble: 2,997 × 6
+# barcodes           sample     x     y section outline
+# <chr>              <chr>  <dbl> <dbl> <chr>   <lgl>  
+# 1 AAACAATCTACTAGCA-1 260_T  231.   532. 1       TRUE   
+# 2 AAACAGAGCGACTCCT-1 260_T  420.   459. 1       FALSE  
+# 3 AAACAGCTTTCAGAAG-1 260_T  101.   274. 1       FALSE  
+# 4 AAACAGGGTCTATATT-1 260_T  116.   248. 1       FALSE  
+# 5 AAACATGGTGAGAGGA-1 260_T   66.7  151. 1       TRUE   
+# 6 AAACCGGGTAGGTACC-1 260_T  172.   280. 1       FALSE  
+# 7 AAACCGTTCGTCCAGG-1 260_T  224.   214. 1       FALSE  
+# 8 AAACCTCATGAAGTTG-1 260_T  139.   312. 1       FALSE  
+# 9 AAACGAAGAACATACC-1 260_T  309.   512. 1       FALSE  
+# 10 AAACGAAGATGGAGTA-1 260_T   81.8  177. 1       FALSE  
+# # ℹ 2,987 more rows
+# # ℹ Use `print(n = ...)` to see more rows
+
+# all expression matrices before denoising
 
 spata.obj %>% 
   getExpressionMatrixNames() %>% 
   print()
 # [1] "scaled"   "denoised"
 
+# active expression matrix before denoising
 spata.obj %>% 
   getActiveMatrixName() %>% 
   print()
 # [1] "denoised"
+
+spata.obj %>% 
+  getFeatureDf() %>% 
+  colnames() %>% 
+  print()
+# [1] "barcodes"         "sample"           "segmentation"     "nCount_Spatial"   "nFeature_Spatial"
+# [6] "Chr0"             "Chr1"             "Chr10"            "Chr11"            "Chr12"           
+# [11] "Chr13"            "Chr14"            "Chr15"            "Chr16"            "Chr17"           
+# [16] "Chr18"            "Chr19"            "Chr2"             "Chr20"            "Chr21"           
+# [21] "Chr22"            "Chr23"            "Chr3"             "Chr4"             "Chr5"            
+# [26] "Chr6"             "Chr7"             "Chr8"             "Chr9"             "Chr10p"          
+# [31] "Chr10q"           "Chr11p"           "Chr11q"           "Chr12p"           "Chr12q"          
+# [36] "Chr13q"           "Chr14q"           "Chr15q"           "Chr16p"           "Chr16q"          
+# [41] "Chr17p"           "Chr17q"           "Chr18p"           "Chr18q"           "Chr19p"          
+# [46] "Chr19q"           "Chr1p"            "Chr1q"            "Chr20p"           "Chr20q"          
+# [51] "Chr21q"           "Chr22q"           "Chr2p"            "Chr2q"            "Chr3p"           
+# [56] "Chr3q"            "Chr4p"            "Chr4q"            "Chr5p"            "Chr5q"           
+# [61] "Chr6p"            "Chr6q"            "Chr7p"            "Chr7q"            "Chr8p"           
+# [66] "Chr8q"            "Chr9p"            "Chr9q"            "CNA.index"     
 
 
 # prep --------------------------------------------------------------------
@@ -103,7 +135,7 @@ for(i in 1:2){
   print(i)
   
   test_gs.i <-  msigdbr(
-    species = "Mus musculus", # "Homo sapiens"
+    species = "Homo sapiens", # "Mus musculus"
     category = c("C5", "H")[i],
     subcategory = c("GO:MF", "")[i]
   ) 
@@ -141,7 +173,7 @@ spata.obj@used_genesets %>%
   dplyr::filter(grepl("NEW2_", ont)) %>% 
   distinct(ont) %>% 
   print()
-# distinct: removed 677 rows (99%), 4 rows remaining
+# distinct: removed 802 rows (>99%), 4 rows remaining
 # ont
 # 1 NEW2_GOMF_POSTSYNAPTIC_NEUROTRANSMITTER_RECEPTOR_ACTIVITY
 # 2                     NEW2_HALLMARK_TNFA_SIGNALING_VIA_NFKB
@@ -166,29 +198,24 @@ joined_df <- spata.obj %>%
 
 joined_df %>% colnames()
 # [1] "barcodes"                                                 
-# [2] "x"                                                        
-# [3] "y"                                                        
-# [4] "tissue"                                                   
-# [5] "row"                                                      
-# [6] "col"                                                      
-# [7] "imagerow"                                                 
-# [8] "imagecol"                                                 
-# [9] "sample"                                                   
-# [10] "section"                                                  
-# [11] "outline"                                                  
-# [12] "NEW2_GOMF_POSTSYNAPTIC_NEUROTRANSMITTER_RECEPTOR_ACTIVITY"
-# [13] "NEW2_HALLMARK_TNFA_SIGNALING_VIA_NFKB"                    
-# [14] "NEW2_HALLMARK_INTERFERON_GAMMA_RESPONSE"                  
-# [15] "NEW2_HALLMARK_INFLAMMATORY_RESPONSE"  
+# [2] "sample"                                                   
+# [3] "x"                                                        
+# [4] "y"                                                        
+# [5] "section"                                                  
+# [6] "outline"                                                  
+# [7] "NEW2_GOMF_POSTSYNAPTIC_NEUROTRANSMITTER_RECEPTOR_ACTIVITY"
+# [8] "NEW2_HALLMARK_TNFA_SIGNALING_VIA_NFKB"                    
+# [9] "NEW2_HALLMARK_INTERFERON_GAMMA_RESPONSE"                  
+# [10] "NEW2_HALLMARK_INFLAMMATORY_RESPONSE"       
 
-colnames(joined_df)[12:15] <- c("MF_P_SYN", "HM_TNFA", "HM_IFNG", "HM_INFLAM")
+colnames(joined_df)[7:10] <- c("MF_P_SYN", "HM_TNFA", "HM_IFNG", "HM_INFLAM")
 
 joined_df %>% colnames()
-# [1] "barcodes"  "x"         "y"         "tissue"    "row"       "col"       "imagerow"  "imagecol"  "sample"   
-# [10] "section"   "outline"   "MF_P_SYN"  "HM_TNFA"   "HM_IFNG"   "HM_INFLAM"
+# [1] "barcodes"  "sample"    "x"         "y"         "section"   "outline"   "MF_P_SYN"  "HM_TNFA"  
+# [9] "HM_IFNG"   "HM_INFLAM"
 
 joined_df_simple <- joined_df %>% 
-  dplyr::select(barcodes, colnames(joined_df)[12:15])
+  dplyr::select(barcodes, colnames(joined_df)[7:10])
 
 
 # add the feature
@@ -210,12 +237,21 @@ spata.obj %>%
   getFeatureDf() %>% 
   colnames() %>% 
   print()
-# [1] "barcodes"            "sample"              "orig.ident"          "nCount_Spatial"     
-# [5] "nFeature_Spatial"    "percent.mt"          "percent.RB"          "Spatial_snn_res.0.8"
-# [9] "seurat_clusters"     "histology"           "RCTM_NEU"            "VRHK_MES"           
-# [13] "segmentation"        "VRHK_MES_cl"         "RCTM_NEU_cl"         "label"              
-# [17] "label.2"             "MF_P_SYN"            "HM_TNFA"             "HM_IFNG"            
-# [21] "HM_INFLAM"     
+# [1] "barcodes"         "sample"           "segmentation"     "nCount_Spatial"   "nFeature_Spatial"
+# [6] "Chr0"             "Chr1"             "Chr10"            "Chr11"            "Chr12"           
+# [11] "Chr13"            "Chr14"            "Chr15"            "Chr16"            "Chr17"           
+# [16] "Chr18"            "Chr19"            "Chr2"             "Chr20"            "Chr21"           
+# [21] "Chr22"            "Chr23"            "Chr3"             "Chr4"             "Chr5"            
+# [26] "Chr6"             "Chr7"             "Chr8"             "Chr9"             "Chr10p"          
+# [31] "Chr10q"           "Chr11p"           "Chr11q"           "Chr12p"           "Chr12q"          
+# [36] "Chr13q"           "Chr14q"           "Chr15q"           "Chr16p"           "Chr16q"          
+# [41] "Chr17p"           "Chr17q"           "Chr18p"           "Chr18q"           "Chr19p"          
+# [46] "Chr19q"           "Chr1p"            "Chr1q"            "Chr20p"           "Chr20q"          
+# [51] "Chr21q"           "Chr22q"           "Chr2p"            "Chr2q"            "Chr3p"           
+# [56] "Chr3q"            "Chr4p"            "Chr4q"            "Chr5p"            "Chr5q"           
+# [61] "Chr6p"            "Chr6q"            "Chr7p"            "Chr7q"            "Chr8p"           
+# [66] "Chr8q"            "Chr9p"            "Chr9q"            "CNA.index"        "MF_P_SYN"        
+# [71] "HM_TNFA"          "HM_IFNG"          "HM_INFLAM"       
 
 
 # save --------------------------------------------------------------------
@@ -223,13 +259,13 @@ spata.obj %>%
 START.TIME <- Sys.time() 
 
 setwd(dir.2)
-out.f <- "visium_SB28_1_subset_infiltration_area_edited.rds"
+out.f <- "visium_SPATAData_260_T_gs_added.rds"
 saveRDS(spata.obj, out.f)
 
 FINISH.TIME <- Sys.time() 
 
 print(FINISH.TIME - START.TIME)
-# Time difference of 6.917964 secs
+# Time difference of 1.792389 mins
 
 
 # visualize (surface plots) (Fig. 2i) ---------------------------------------------------------------
@@ -242,13 +278,13 @@ for(i in 1:4){
                "TNFɑ Signaling via-NFκB", 
                "IFNg Response",
                "Inflammatory Response"
-  )[i]
+               )[i]
   g <- spata.obj %>% 
     plotSurface(
       display_image = T, 
       color_by = name.i, 
       smooth_span = 1,
-      pt_size = 3
+      pt_size = 2
     ) + ggplot2::labs(title = title.i, color = "score") + 
     ggplot2::theme(
       plot.title = element_text(hjust = 0, size = 12), 
@@ -269,7 +305,7 @@ g1 <- gg.list[[1]] ; g2 <- gg.list[[2]] ; g3 <- gg.list[[3]]; g4 <- gg.list[[4]]
 
 # visualize (scatter plots - correlation) (Fig. 2i) ---------------------------------------------------------------
 
-gg.list() <- list()
+gg.list <- list()
 for(i in 1:3){
   print(i)
   gs.i <- c("HM_TNFA", "HM_IFNG", "HM_INFLAM")[i]
@@ -309,7 +345,7 @@ g5 <- gg.list[[1]] ; g6 <- gg.list[[2]] ; g7 <- gg.list[[3]]
 g <- ggarrange(
   plotlist = list(NULL, g2, g3, g4, g1, g5, g6, g7), 
   ncol = 4, nrow = 2) + theme(legend.position = "none")
-  
+
 setwd(dir.2)
 out.f <- "08_surface_n_scatter_plots_combined.pdf"
 ggsave(out.f, g, w = 16, h = 8)
@@ -318,7 +354,7 @@ ggsave(out.f, g, w = 16, h = 8)
 # si ----------------------------------------------------------------------
 
 Sys.time()
-# 
+
 
 sessionInfo()
 # R version 4.1.3 (2022-03-10)
@@ -330,17 +366,18 @@ sessionInfo()
 # LAPACK: /software/c4/cbi/software/_rocky8/R-4.1.3/lib64/R/lib/libRlapack.so
 # 
 # locale:
-# [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C               LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
-# [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8    LC_PAPER=en_US.UTF-8       LC_NAME=C                 
-# [9] LC_ADDRESS=C               LC_TELEPHONE=C             LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+# [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C               LC_TIME=en_US.UTF-8       
+# [4] LC_COLLATE=en_US.UTF-8     LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+# [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                  LC_ADDRESS=C              
+# [10] LC_TELEPHONE=C             LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
 # 
 # attached base packages:
 # [1] stats     graphics  grDevices utils     datasets  methods   base     
 # 
 # other attached packages:
-# [1] msigdbr_7.4.1   ggpubr_0.4.0    ggsci_3.2.0     hdf5r_1.3.9     EBImage_4.34.0  tidylog_1.0.2  
-# [7] forcats_0.5.1   stringr_1.5.1   dplyr_1.1.4     purrr_1.0.2     readr_2.1.5     tidyr_1.3.1    
-# [13] tibble_3.2.1    ggplot2_3.5.1   tidyverse_1.3.1 SPATA2_2.0.4   
+# [1] msigdbr_7.4.1   ggpubr_0.4.0    tidylog_1.0.2   forcats_0.5.1   stringr_1.5.1   dplyr_1.1.4    
+# [7] purrr_1.0.2     readr_2.1.5     tidyr_1.3.1     tibble_3.2.1    ggplot2_3.5.1   tidyverse_1.3.1
+# [13] SPATA2_2.0.4   
 # 
 # loaded via a namespace (and not attached):
 # [1] utf8_1.2.4                  spatstat.explore_3.2-1      reticulate_1.40.0          
@@ -353,24 +390,24 @@ sessionInfo()
 # [22] stats4_4.1.3                SingleCellExperiment_1.14.1 ROCR_1.0-11                
 # [25] ggsignif_0.6.2              tensor_1.5                  listenv_0.8.0              
 # [28] labeling_0.4.3              MatrixGenerics_1.4.3        GenomeInfoDbData_1.2.6     
-# [31] polyclip_1.10-7             bit64_4.5.2                 farver_2.1.2               
-# [34] parallelly_1.31.1           vctrs_0.6.5                 generics_0.1.3             
-# [37] timechange_0.3.0            R6_2.5.1                    GenomeInfoDb_1.28.1        
-# [40] locfit_1.5-9.4              bitops_1.0-9                spatstat.utils_3.1-1       
-# [43] DelayedArray_0.18.0         assertthat_0.2.1            promises_1.3.2             
-# [46] scales_1.3.0                gtable_0.3.6                globals_0.15.0             
-# [49] goftest_1.2-2               rlang_1.1.4                 clisymbols_1.2.0           
-# [52] systemfonts_1.1.0           splines_4.1.3               rstatix_0.7.0              
-# [55] lazyeval_0.2.2              spatstat.geom_3.2-4         broom_1.0.7                
-# [58] reshape2_1.4.4              abind_1.4-5                 modelr_0.1.8               
-# [61] backports_1.5.0             httpuv_1.6.15               tools_4.1.3                
-# [64] RColorBrewer_1.1-3          BiocGenerics_0.38.0         ggridges_0.5.6             
-# [67] Rcpp_1.0.13-1               plyr_1.8.7                  zlibbioc_1.38.0            
-# [70] RCurl_1.98-1.3              deldir_1.0-6                pbapply_1.5-0              
-# [73] cowplot_1.1.1               S4Vectors_0.30.2            zoo_1.8-10                 
-# [76] SeuratObject_4.1.3          SummarizedExperiment_1.22.0 haven_2.4.3                
-# [79] ggrepel_0.9.1               cluster_2.1.2               fs_1.6.5                   
-# [82] magrittr_2.0.3              data.table_1.16.4           scattermore_1.2            
+# [31] polyclip_1.10-7             farver_2.1.2                parallelly_1.31.1          
+# [34] vctrs_0.6.5                 generics_0.1.3              timechange_0.3.0           
+# [37] R6_2.5.1                    GenomeInfoDb_1.28.1         locfit_1.5-9.4             
+# [40] bitops_1.0-9                spatstat.utils_3.1-1        DelayedArray_0.18.0        
+# [43] assertthat_0.2.1            promises_1.3.2              scales_1.3.0               
+# [46] gtable_0.3.6                globals_0.15.0              goftest_1.2-2              
+# [49] rlang_1.1.4                 clisymbols_1.2.0            systemfonts_1.1.0          
+# [52] splines_4.1.3               rstatix_0.7.0               lazyeval_0.2.2             
+# [55] spatstat.geom_3.2-4         broom_1.0.7                 reshape2_1.4.4             
+# [58] abind_1.4-5                 modelr_0.1.8                backports_1.5.0            
+# [61] httpuv_1.6.15               tools_4.1.3                 RColorBrewer_1.1-3         
+# [64] BiocGenerics_0.38.0         ggridges_0.5.6              Rcpp_1.0.13-1              
+# [67] plyr_1.8.7                  zlibbioc_1.38.0             RCurl_1.98-1.3             
+# [70] deldir_1.0-6                pbapply_1.5-0               cowplot_1.1.1              
+# [73] S4Vectors_0.30.2            zoo_1.8-10                  SeuratObject_4.1.3         
+# [76] SummarizedExperiment_1.22.0 haven_2.4.3                 ggrepel_0.9.1              
+# [79] cluster_2.1.2               fs_1.6.5                    magrittr_2.0.3             
+# [82] magick_2.8.5                data.table_1.16.4           scattermore_1.2            
 # [85] openxlsx_4.2.4              lmtest_0.9-40               reprex_2.0.1               
 # [88] RANN_2.6.1                  fitdistrplus_1.1-5          anndata_0.7.5.6            
 # [91] matrixStats_0.62.0          hms_1.1.3                   patchwork_1.3.0            
@@ -389,13 +426,15 @@ sessionInfo()
 # [130] rvest_1.0.1                 digest_0.6.37               sctransform_0.3.5          
 # [133] RcppAnnoy_0.0.22            spatstat.data_3.0-1         cellranger_1.1.0           
 # [136] leiden_0.3.9                uwot_0.1.16                 curl_6.0.1                 
-# [139] shiny_1.10.0                lifecycle_1.0.4             nlme_3.1-152               
-# [142] jsonlite_1.8.9              carData_3.0-4               viridisLite_0.4.2          
-# [145] pillar_1.10.0               lattice_0.20-44             fastmap_1.2.0              
-# [148] httr_1.4.7                  survival_3.2-12             glue_1.8.0                 
-# [151] zip_2.2.0                   png_0.1-8                   bit_4.5.0.1                
+# [139] shiny_1.10.0                EBImage_4.34.0              lifecycle_1.0.4            
+# [142] nlme_3.1-152                jsonlite_1.8.9              carData_3.0-4              
+# [145] viridisLite_0.4.2           pillar_1.10.0               lattice_0.20-44            
+# [148] fastmap_1.2.0               httr_1.4.7                  survival_3.2-12            
+# [151] glue_1.8.0                  zip_2.2.0                   png_0.1-8                  
 # [154] stringi_1.8.4               textshaping_0.3.6           irlba_2.3.5.1              
 # [157] future.apply_1.8.1         
 
 
 # end ---------------------------------------------------------------------
+
+
