@@ -268,7 +268,7 @@ print(FINISH.TIME - START.TIME)
 # Time difference of 1.792389 mins
 
 
-# visualize (surface plots) (Fig. 2i) ---------------------------------------------------------------
+# visualize (surface plots) (Fig. 2c) ---------------------------------------------------------------
 
 gg.list <- list()
 for(i in 1:4){
