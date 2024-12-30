@@ -222,7 +222,7 @@ coords_df <- getCoordsDf(spata.obj)
 joined_df <- spata.obj %>%
   joinWith(
     spata_df = coords_df,
-    gene_sets = paste0("NEW_", names.gs.of.interest), # expression values of the gene set Hallmark-Hypoxia
+    gene_sets = paste0("NEW_", names.gs.of.interest), 
     verbose = FALSE)
 
 

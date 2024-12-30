@@ -11,7 +11,7 @@
 
 # Using different versions of packages, such as SPATA2, may lead to varying outcomes, which we have not thoroughly validated.
 
-# The RDS object "visium_SB28_1_subset_infiltration_area.rds" is used as input. For more details, please refer to the previous step, "2_03_stRNAseq_segmentation.R".
+# The RDS object "visium_GSE245263_GL261_subset_infiltration_area.rds" is used as input. For more details, please refer to the previous step, "2_23_GL261_GSE245263_stRNAseq_segmentation.R".
 
 
 # rm all ------------------------------------------------------------------
@@ -24,8 +24,6 @@ rm(list = ls(all.names = T))
 library(SPATA2) 
 library(tidyverse)
 library(tidylog)
-library(EBImage)
-library(hdf5r)
 library(ggsci)
 library(ggpubr)
 library(msigdbr)
@@ -36,11 +34,14 @@ library(msigdbr)
 packageVersion("SPATA2")
 # [1] ‘2.0.4’
 
+packageVersion("msigdbr")
+# [1] ‘7.4.1’
+
 
 # dir ---------------------------------------------------------------------
 
-dir.1 <- "/okadalab/data1/tnejo/neuro_immune_proj/for_github/out/2_03_stRNAseq_segmentation/"
-dir.2 <- "/okadalab/data1/tnejo/neuro_immune_proj/for_github/out/2_04_stRNAseq_correlation/"
+dir.1 <- "/okadalab/data1/tnejo/neuro_immune_proj/for_github/out/2_23_GL261_GSE245263_stRNAseq_segmentation/"
+dir.2 <- "/okadalab/data1/tnejo/neuro_immune_proj/for_github/out/2_24_GL261_GSE245263_stRNAseq_correlation/"
 if(dir.exists(dir.2) == F){dir.create(dir.2)}
 
 
@@ -49,34 +50,38 @@ if(dir.exists(dir.2) == F){dir.create(dir.2)}
 START.TIME <- Sys.time()
 
 setwd(dir.1)
-in.f <- "visium_SB28_1_subset_infiltration_area_edited.rds"
+in.f <- "visium_GSE245263_GL261_subset_infiltration_area.rds"
 spata.obj <- readRDS(in.f)
 
 FINISH.TIME <- Sys.time() 
 
 print(FINISH.TIME - START.TIME)
-# Time difference of 1.188813 secs
+# Time difference of 2.410955 secs
 
 
 # check -------------------------------------------------------------------
 
 spata.obj 
-# An object of class 'spata2' that contains 1 sample named 'A1_166L_Cas9'.
+# An object of class 'spata2' that contains 1 sample named 'GSM7839621'.
 
 spata.obj %>% 
   getFeatureDf() %>% 
   colnames() %>% 
   print()
-# [1] "barcodes"            "sample"              "orig.ident"          "nCount_Spatial"     
-# [5] "nFeature_Spatial"    "percent.mt"          "percent.RB"          "Spatial_snn_res.0.8"
-# [9] "seurat_clusters"     "histology"           "RCTM_NEU"            "VRHK_MES"           
-# [13] "segmentation"        "VRHK_MES_cl"         "RCTM_NEU_cl"         "label"              
-# [17] "label.2"    
+# [1] "barcodes"                    "sample"                      "in_tissue"                  
+# [4] "array_row"                   "array_col"                   "n_genes_by_counts"          
+# [7] "log1p_n_genes_by_counts"     "total_counts"                "log1p_total_counts"         
+# [10] "pct_counts_in_top_50_genes"  "pct_counts_in_top_100_genes" "pct_counts_in_top_200_genes"
+# [13] "pct_counts_in_top_500_genes" "total_counts_mt"             "log1p_total_counts_mt"      
+# [16] "pct_counts_mt"               "condition"                   "coarse"                     
+# [19] "fine"                        "leiden"                      "segmentation"               
+# [22] "VRHK_MES"                    "RCTM_NEU"                    "VRHK_MES_cl"                
+# [25] "RCTM_NEU_cl"                 "label"                       "label.2"   
 
 spata.obj %>% 
   getExpressionMatrixNames() %>% 
   print()
-# [1] "scaled"   "denoised"
+# [1] "normalized" "scaled"     "denoised"  
 
 spata.obj %>% 
   getActiveMatrixName() %>% 
@@ -166,32 +171,28 @@ joined_df <- spata.obj %>%
 
 joined_df %>% colnames()
 # [1] "barcodes"                                                 
-# [2] "x"                                                        
-# [3] "y"                                                        
-# [4] "tissue"                                                   
-# [5] "row"                                                      
-# [6] "col"                                                      
-# [7] "imagerow"                                                 
-# [8] "imagecol"                                                 
-# [9] "sample"                                                   
-# [10] "section"                                                  
-# [11] "outline"                                                  
-# [12] "NEW2_GOMF_POSTSYNAPTIC_NEUROTRANSMITTER_RECEPTOR_ACTIVITY"
-# [13] "NEW2_HALLMARK_TNFA_SIGNALING_VIA_NFKB"                    
-# [14] "NEW2_HALLMARK_INTERFERON_GAMMA_RESPONSE"                  
-# [15] "NEW2_HALLMARK_INFLAMMATORY_RESPONSE"  
+# [2] "sample"                                                   
+# [3] "imagerow"                                                 
+# [4] "imagecol"                                                 
+# [5] "x"                                                        
+# [6] "y"                                                        
+# [7] "section"                                                  
+# [8] "outline"                                                  
+# [9] "NEW2_GOMF_POSTSYNAPTIC_NEUROTRANSMITTER_RECEPTOR_ACTIVITY"
+# [10] "NEW2_HALLMARK_TNFA_SIGNALING_VIA_NFKB"                    
+# [11] "NEW2_HALLMARK_INTERFERON_GAMMA_RESPONSE"                  
+# [12] "NEW2_HALLMARK_INFLAMMATORY_RESPONSE"     
 
-colnames(joined_df)[12:15] <- c("MF_P_SYN", "HM_TNFA", "HM_IFNG", "HM_INFLAM")
+colnames(joined_df)[9:12] <- c("MF_P_SYN", "HM_TNFA", "HM_IFNG", "HM_INFLAM")
 
 joined_df %>% colnames()
-# [1] "barcodes"  "x"         "y"         "tissue"    "row"       "col"       "imagerow"  "imagecol"  "sample"   
-# [10] "section"   "outline"   "MF_P_SYN"  "HM_TNFA"   "HM_IFNG"   "HM_INFLAM"
+# [1] "barcodes"  "sample"    "imagerow"  "imagecol"  "x"         "y"         "section"   "outline"  
+# [9] "MF_P_SYN"  "HM_TNFA"   "HM_IFNG"   "HM_INFLAM"
 
 joined_df_simple <- joined_df %>% 
-  dplyr::select(barcodes, colnames(joined_df)[12:15])
+  dplyr::select(barcodes, colnames(joined_df)[9:12])
 
-
-# add the feature
+# add the features
 
 spata.obj <- spata.obj %>% 
   addFeatures(
@@ -204,18 +205,23 @@ spata.obj <- spata.obj %>%
 # check -------------------------------------------------------------------
 
 spata.obj %>% print()
-# An object of class 'spata2' that contains 1 sample named 'A1_166L_Cas9'.
+# An object of class 'spata2' that contains 1 sample named 'GSM7839621'.
 
 spata.obj %>% 
   getFeatureDf() %>% 
   colnames() %>% 
   print()
-# [1] "barcodes"            "sample"              "orig.ident"          "nCount_Spatial"     
-# [5] "nFeature_Spatial"    "percent.mt"          "percent.RB"          "Spatial_snn_res.0.8"
-# [9] "seurat_clusters"     "histology"           "RCTM_NEU"            "VRHK_MES"           
-# [13] "segmentation"        "VRHK_MES_cl"         "RCTM_NEU_cl"         "label"              
-# [17] "label.2"             "MF_P_SYN"            "HM_TNFA"             "HM_IFNG"            
-# [21] "HM_INFLAM"     
+# [1] "barcodes"                    "sample"                      "in_tissue"                  
+# [4] "array_row"                   "array_col"                   "n_genes_by_counts"          
+# [7] "log1p_n_genes_by_counts"     "total_counts"                "log1p_total_counts"         
+# [10] "pct_counts_in_top_50_genes"  "pct_counts_in_top_100_genes" "pct_counts_in_top_200_genes"
+# [13] "pct_counts_in_top_500_genes" "total_counts_mt"             "log1p_total_counts_mt"      
+# [16] "pct_counts_mt"               "condition"                   "coarse"                     
+# [19] "fine"                        "leiden"                      "segmentation"               
+# [22] "VRHK_MES"                    "RCTM_NEU"                    "VRHK_MES_cl"                
+# [25] "RCTM_NEU_cl"                 "label"                       "label.2"                    
+# [28] "MF_P_SYN"                    "HM_TNFA"                     "HM_IFNG"                    
+# [31] "HM_INFLAM"      
 
 
 # save --------------------------------------------------------------------
@@ -223,16 +229,16 @@ spata.obj %>%
 START.TIME <- Sys.time() 
 
 setwd(dir.2)
-out.f <- "visium_SB28_1_subset_infiltration_area_edited.rds"
+out.f <- "visium_GSE245263_GL261_subset_infiltration_area_edited.rds"
 saveRDS(spata.obj, out.f)
 
 FINISH.TIME <- Sys.time() 
 
 print(FINISH.TIME - START.TIME)
-# Time difference of 6.917964 secs
+# Time difference of 19.53429 secs
 
 
-# visualize (surface plots) (Fig. 2i) ---------------------------------------------------------------
+# visualize (surface plots) (Extended Data Fig. S7n) ---------------------------------------------------------------
 
 gg.list <- list()
 for(i in 1:4){
@@ -245,7 +251,7 @@ for(i in 1:4){
   )[i]
   g <- spata.obj %>% 
     plotSurface(
-      display_image = T, 
+      display_image = F, 
       color_by = name.i, 
       smooth_span = 1,
       pt_size = 3
@@ -268,7 +274,7 @@ g1 <- gg.list[[1]] ; g2 <- gg.list[[2]] ; g3 <- gg.list[[3]]; g4 <- gg.list[[4]]
 
 # visualize (scatter plots - correlation) (Fig. 2i) ---------------------------------------------------------------
 
-gg.list() <- list()
+gg.list <- list()
 for(i in 1:3){
   print(i)
   gs.i <- c("HM_TNFA", "HM_IFNG", "HM_INFLAM")[i]
@@ -304,7 +310,6 @@ for(i in 1:3){
 
 g5 <- gg.list[[1]] ; g6 <- gg.list[[2]] ; g7 <- gg.list[[3]]
 
-
 g <- ggarrange(
   plotlist = list(NULL, g2, g3, g4, g1, g5, g6, g7), 
   ncol = 4, nrow = 2) + theme(legend.position = "none")
@@ -329,17 +334,18 @@ sessionInfo()
 # LAPACK: /software/c4/cbi/software/_rocky8/R-4.1.3/lib64/R/lib/libRlapack.so
 # 
 # locale:
-# [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C               LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
-# [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8    LC_PAPER=en_US.UTF-8       LC_NAME=C                 
-# [9] LC_ADDRESS=C               LC_TELEPHONE=C             LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+# [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C               LC_TIME=en_US.UTF-8       
+# [4] LC_COLLATE=en_US.UTF-8     LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+# [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                  LC_ADDRESS=C              
+# [10] LC_TELEPHONE=C             LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
 # 
 # attached base packages:
 # [1] stats     graphics  grDevices utils     datasets  methods   base     
 # 
 # other attached packages:
-# [1] msigdbr_7.4.1   ggpubr_0.4.0    ggsci_3.2.0     hdf5r_1.3.9     EBImage_4.34.0  tidylog_1.0.2  
-# [7] forcats_0.5.1   stringr_1.5.1   dplyr_1.1.4     purrr_1.0.2     readr_2.1.5     tidyr_1.3.1    
-# [13] tibble_3.2.1    ggplot2_3.5.1   tidyverse_1.3.1 SPATA2_2.0.4   
+# [1] msigdbr_7.4.1   ggpubr_0.4.0    ggsci_3.2.0     tidylog_1.0.2   forcats_0.5.1   stringr_1.5.1  
+# [7] dplyr_1.1.4     purrr_1.0.2     readr_2.1.5     tidyr_1.3.1     tibble_3.2.1    ggplot2_3.5.1  
+# [13] tidyverse_1.3.1 SPATA2_2.0.4   
 # 
 # loaded via a namespace (and not attached):
 # [1] utf8_1.2.4                  spatstat.explore_3.2-1      reticulate_1.40.0          
@@ -352,13 +358,13 @@ sessionInfo()
 # [22] stats4_4.1.3                SingleCellExperiment_1.14.1 ROCR_1.0-11                
 # [25] ggsignif_0.6.2              tensor_1.5                  listenv_0.8.0              
 # [28] labeling_0.4.3              MatrixGenerics_1.4.3        GenomeInfoDbData_1.2.6     
-# [31] polyclip_1.10-7             bit64_4.5.2                 farver_2.1.2               
-# [34] parallelly_1.31.1           vctrs_0.6.5                 generics_0.1.3             
-# [37] timechange_0.3.0            R6_2.5.1                    GenomeInfoDb_1.28.1        
-# [40] locfit_1.5-9.4              bitops_1.0-9                spatstat.utils_3.1-1       
-# [43] DelayedArray_0.18.0         assertthat_0.2.1            promises_1.3.2             
-# [46] scales_1.3.0                gtable_0.3.6                globals_0.15.0             
-# [49] goftest_1.2-2               rlang_1.1.4                 clisymbols_1.2.0           
+# [31] polyclip_1.10-7             farver_2.1.2                parallelly_1.31.1          
+# [34] vctrs_0.6.5                 generics_0.1.3              timechange_0.3.0           
+# [37] R6_2.5.1                    GenomeInfoDb_1.30.1         locfit_1.5-9.4             
+# [40] bitops_1.0-9                spatstat.utils_3.1-1        DelayedArray_0.18.0        
+# [43] assertthat_0.2.1            promises_1.3.2              scales_1.3.0               
+# [46] gtable_0.3.6                globals_0.15.0              goftest_1.2-2              
+# [49] spam_2.11-0                 rlang_1.1.4                 clisymbols_1.2.0           
 # [52] systemfonts_1.1.0           splines_4.1.3               rstatix_0.7.0              
 # [55] lazyeval_0.2.2              spatstat.geom_3.2-4         broom_1.0.7                
 # [58] reshape2_1.4.4              abind_1.4-5                 modelr_0.1.8               
@@ -367,34 +373,34 @@ sessionInfo()
 # [67] Rcpp_1.0.13-1               plyr_1.8.7                  zlibbioc_1.38.0            
 # [70] RCurl_1.98-1.3              deldir_1.0-6                pbapply_1.5-0              
 # [73] cowplot_1.1.1               S4Vectors_0.30.2            zoo_1.8-10                 
-# [76] SeuratObject_4.1.3          SummarizedExperiment_1.22.0 haven_2.4.3                
+# [76] SeuratObject_5.0.2          SummarizedExperiment_1.22.0 haven_2.4.3                
 # [79] ggrepel_0.9.1               cluster_2.1.2               fs_1.6.5                   
-# [82] magrittr_2.0.3              data.table_1.16.4           scattermore_1.2            
-# [85] openxlsx_4.2.4              lmtest_0.9-40               reprex_2.0.1               
-# [88] RANN_2.6.1                  fitdistrplus_1.1-5          anndata_0.7.5.6            
-# [91] matrixStats_0.62.0          hms_1.1.3                   patchwork_1.3.0            
-# [94] mime_0.12                   fftwtools_0.9-11            xtable_1.8-4               
-# [97] rio_0.5.27                  jpeg_0.1-9                  readxl_1.3.1               
-# [100] IRanges_2.26.0              gridExtra_2.3               compiler_4.1.3             
-# [103] KernSmooth_2.23-20          crayon_1.5.3                SPATAData_0.0.0.9000       
-# [106] htmltools_0.5.8.1           mgcv_1.8-36                 later_1.4.1                
-# [109] tzdb_0.4.0                  tiff_0.1-11                 lubridate_1.9.4            
-# [112] DBI_1.2.3                   dbplyr_2.1.1                MASS_7.3-54                
-# [115] babelgene_21.4              Matrix_1.6-4                car_3.0-11                 
-# [118] cli_3.6.3                   parallel_4.1.3              igraph_1.3.1               
-# [121] GenomicRanges_1.44.0        pkgconfig_2.0.3             foreign_0.8-81             
-# [124] sp_2.1-4                    confuns_1.0.3               plotly_4.10.4              
-# [127] spatstat.sparse_3.0-2       xml2_1.3.2                  XVector_0.32.0             
-# [130] rvest_1.0.1                 digest_0.6.37               sctransform_0.3.5          
-# [133] RcppAnnoy_0.0.22            spatstat.data_3.0-1         cellranger_1.1.0           
-# [136] leiden_0.3.9                uwot_0.1.16                 curl_6.0.1                 
-# [139] shiny_1.10.0                lifecycle_1.0.4             nlme_3.1-152               
-# [142] jsonlite_1.8.9              carData_3.0-4               viridisLite_0.4.2          
-# [145] pillar_1.10.0               lattice_0.20-44             fastmap_1.2.0              
-# [148] httr_1.4.7                  survival_3.2-12             glue_1.8.0                 
-# [151] zip_2.2.0                   png_0.1-8                   bit_4.5.0.1                
-# [154] stringi_1.8.4               textshaping_0.3.6           irlba_2.3.5.1              
-# [157] future.apply_1.8.1         
+# [82] magrittr_2.0.3              magick_2.8.5                data.table_1.16.4          
+# [85] scattermore_1.2             openxlsx_4.2.4              lmtest_0.9-40              
+# [88] reprex_2.0.1                RANN_2.6.1                  fitdistrplus_1.1-5         
+# [91] anndata_0.7.5.6             matrixStats_0.62.0          hms_1.1.3                  
+# [94] patchwork_1.3.0             mime_0.12                   fftwtools_0.9-11           
+# [97] xtable_1.8-4                rio_0.5.27                  jpeg_0.1-9                 
+# [100] readxl_1.3.1                IRanges_2.26.0              gridExtra_2.3              
+# [103] compiler_4.1.3              KernSmooth_2.23-20          crayon_1.5.3               
+# [106] SPATAData_0.0.0.9000        htmltools_0.5.8.1           mgcv_1.8-36                
+# [109] later_1.4.1                 tzdb_0.4.0                  tiff_0.1-11                
+# [112] lubridate_1.9.4             DBI_1.2.3                   dbplyr_2.1.1               
+# [115] MASS_7.3-54                 babelgene_21.4              Matrix_1.6-4               
+# [118] car_3.0-11                  cli_3.6.3                   parallel_4.1.3             
+# [121] dotCall64_1.2               igraph_1.3.1                GenomicRanges_1.44.0       
+# [124] pkgconfig_2.0.3             foreign_0.8-81              sp_2.1-4                   
+# [127] confuns_1.0.3               plotly_4.10.4               spatstat.sparse_3.0-2      
+# [130] xml2_1.3.2                  XVector_0.32.0              rvest_1.0.1                
+# [133] digest_0.6.37               sctransform_0.3.5           RcppAnnoy_0.0.22           
+# [136] spatstat.data_3.0-1         cellranger_1.1.0            leiden_0.3.9               
+# [139] uwot_0.1.16                 curl_6.0.1                  shiny_1.10.0               
+# [142] EBImage_4.34.0              lifecycle_1.0.4             nlme_3.1-152               
+# [145] jsonlite_1.8.9              carData_3.0-4               viridisLite_0.4.2          
+# [148] pillar_1.10.0               lattice_0.20-44             fastmap_1.2.0              
+# [151] httr_1.4.7                  survival_3.2-12             glue_1.8.0                 
+# [154] zip_2.2.0                   png_0.1-8                   stringi_1.8.4              
+# [157] textshaping_0.3.6           irlba_2.3.5.1               future.apply_1.8.1         
 
 
 # end ---------------------------------------------------------------------
